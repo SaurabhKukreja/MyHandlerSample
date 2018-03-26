@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    static TextView command;
+    static TextView command,swtsCommand;
     Handler uiHandler;
     Message msg;
     @Override
@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         command = findViewById(R.id.command);
+        swtsCommand = findViewById(R.id.swtsCommand);
         uiHandler = new UIHandler();
 
     }
@@ -46,12 +47,33 @@ public class MainActivity extends AppCompatActivity {
         };
         new Thread(kitchenThread).start();
     }
+
+    public void getSweets(View view) {
+
+        Runnable runSwtsCommand = new Runnable() {
+            @Override
+            public void run() {
+
+                msg = uiHandler.obtainMessage(UIHandler.SWEETS_READY);
+                uiHandler.sendMessage(msg);
+            }
+        };
+
+        msg = uiHandler.obtainMessage(UIHandler.SWEETS_COMMAND);
+        uiHandler.sendMessage(msg);
+        uiHandler.postDelayed(runSwtsCommand,5000);
+
+    }
+
     private static class UIHandler extends Handler{
 
         private static final int OK = 1;
         private static final int STARTED = 2;
         private static final int READY = 3;
         private static final int ENJOY = 4;
+        private static final int SWEETS_COMMAND = 5;
+        private static final int SWEETS_READY = 6;
+
 
         @Override
         public void handleMessage(Message msg) {
@@ -68,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case ENJOY:
                     command.setText("Please enjoy the food");
+                    break;
+                case SWEETS_COMMAND:
+                    swtsCommand.setText("Your Sweets will be ready in 5 sec");
+                    break;
+                case SWEETS_READY:
+                    swtsCommand.setText("Please enjoy the sweets");
                     break;
 
             }
